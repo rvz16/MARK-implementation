@@ -1,0 +1,4 @@
+dataset: cora  # options: cora | citeseer | pubmed | wikics
+data_dir: ./data
+plm_model: sentence-transformers/all-MiniLM-L6-v2
+batch_size_plm: 64

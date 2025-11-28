@@ -1,0 +1,11 @@
+llm:
+  base_url: http://localhost:8000/v1
+  model: openai/gpt-oss-120b
+  temperature: 0.2
+  max_tokens: 512
+top_n_concept: 100
+k_neighbors: 10
+batch_nodes: 16
+concurrency: 2
+retries: 3
+retry_backoff: 1.5

@@ -1,0 +1,12 @@
+backbone: magi  # options: magi | dmon
+hidden_dim: 256   # Increased for better representation
+proj_dim: 128     # Increased projection dimension
+num_clusters: 0   # 0 => infer from dataset labels
+tau_align: 0.5    # Temperature for NT-Xent contrastive loss
+lambda_clu: 0.5   # Weight for clustering loss (reduced to prevent collapse)
+t_rank: 0.1       # Temperature for ranking calibration loss
+num_layers: 2     # Number of GCN layers
+dropout: 0.1      # Dropout for regularization
+feat_drop: 0.2    # Feature dropout for augmentation
+edge_drop: 0.2    # Edge dropout for augmentation
+collapse_reg: 0.1 # Collapse regularization for DMoN

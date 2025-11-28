@@ -1,0 +1,14 @@
+torch
+torch-geometric
+torchmetrics
+scikit-learn
+networkx
+pyyaml
+tqdm
+sentence-transformers
+scipy
+numpy
+matplotlib
+openai
+uvloop
+aiohttp

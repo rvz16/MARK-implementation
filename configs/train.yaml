@@ -1,0 +1,12 @@
+device: cuda  # cpu | cuda
+amp: true
+seed: 42
+lr: 0.001
+weight_decay: 0.0005
+T: 3                    # Number of MARK refinement steps
+T_prime: 1              # Agent execution interval
+ft_epochs_per_step: 10  # Fine-tuning epochs per step (increased)
+log_dir: ./experiments
+pretrain_epochs: 100    # Pretraining epochs (increased for convergence)
+warmup_epochs: 10       # Warmup epochs before K-means init
+checkpoint_path: ./experiments/checkpoints
