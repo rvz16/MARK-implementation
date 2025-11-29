@@ -2,6 +2,39 @@
 
 The foundation and reproducibility are based on the attached paper 2025.findings-acl.314.pdf: implemented end-to-end cycle pretrain → agents → filter R → update X → ranking fine-tuning → metrics over GNN backbones (MAGI, DMoN) with local LLM.
 
+## 📚 Interactive Blog
+
+We provide an interactive blog that explains Graph ML concepts and the MARK framework step-by-step:
+
+**[View the Blog](https://github.com/Quartz-Admirer/MARK-implementation)** (replace with your GitHub Pages URL)
+
+### Running the Blog Locally
+```bash
+# Option 1: Python HTTP server
+cd docs && python -m http.server 8080
+# Then open http://localhost:8080
+
+# Option 2: Node.js (if installed)
+npx serve docs
+
+# Option 3: VS Code Live Server extension
+# Right-click docs/index.html → "Open with Live Server"
+```
+
+### Deploying to GitHub Pages
+1. Go to your repository Settings → Pages
+2. Set Source to "Deploy from a branch"
+3. Select `main` branch and `/docs` folder
+4. Save and wait for deployment
+
+The blog covers:
+- Graph ML fundamentals (nodes, edges, features)
+- PyTorch Geometric (PyG) basics with code examples
+- Graph Neural Networks and message passing
+- Deep graph clustering (MAGI, DMoN backbones)
+- The MARK multi-agent framework
+- Complete implementation walkthrough
+
 ## Installation
 - Install PyTorch with appropriate CUDA/CPU build: see https://pytorch.org/get-started/locally/
 - `pip install -r requirements.txt`

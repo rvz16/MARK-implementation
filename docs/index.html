@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARK: Multi-Agent Graph Clustering</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-pattern"></div>
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="brand-icon">◈</span>
+            <span class="brand-text">MARK</span>
+        </div>
+        <div class="nav-links">
+            <a href="#intro">Introduction</a>
+            <a href="#graphs">Graph Basics</a>
+            <a href="#gnns">GNNs</a>
+            <a href="#clustering">Clustering</a>
+            <a href="#mark">MARK Framework</a>
+            <a href="#code">Code</a>
+        </div>
+        <a href="https://github.com/Quartz-Admirer/MARK-implementation" class="nav-github" target="_blank" id="github-link">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- Code Viewer Modal -->
+    <div id="codeModal" class="code-modal">
+        <div class="code-modal-content">
+            <div class="code-modal-header">
+                <span class="code-modal-title" id="codeModalTitle">filename.py</span>
+                <button class="code-modal-close" id="codeModalClose">&times;</button>
+            </div>
+            <div class="code-modal-body">
+                <pre><code id="codeModalContent" class="language-python"></code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="hero" id="intro">
+        <div class="hero-content">
+            <div class="hero-badge">ACL 2025 Findings</div>
+            <h1 class="hero-title">
+                <span class="title-accent">M</span>ulti-<span class="title-accent">A</span>gent 
+                <span class="title-accent">R</span>efinement for Graph Clustering with 
+                LLM-based <span class="title-accent">K</span>nowledge
+            </h1>
+            <p class="hero-subtitle">
+                A novel framework that leverages LLM agents to improve deep graph clustering 
+                through iterative knowledge refinement on text-attributed graphs.
+            </p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-value">3</span>
+                    <span class="stat-label">Collaborative Agents</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">+8.3%</span>
+                    <span class="stat-label">Accuracy Gain</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">4</span>
+                    <span class="stat-label">Benchmark Datasets</span>
+                </div>
+            </div>
+            <div class="hero-actions">
+                <a href="#graphs" class="btn btn-primary">Start Learning</a>
+                <a href="https://github.com/Quartz-Admirer/MARK-implementation" class="btn btn-secondary github-link" target="_blank">View Code</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <canvas id="heroGraph"></canvas>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content">
+        
+        <!-- Section 1: Graph Basics -->
+        <section class="section" id="graphs">
+            <div class="section-header">
+                <span class="section-number">01</span>
+                <h2>Understanding Graphs in Machine Learning</h2>
+                <p class="section-subtitle">Before diving into Graph Neural Networks, let's build intuition about graph-structured data</p>
+            </div>
+
+            <article class="article-block">
+                <h3>What is a Graph?</h3>
+                <p>
+                    In the context of machine learning, a <strong>graph</strong> is a data structure consisting of 
+                    <em>nodes</em> (also called vertices) connected by <em>edges</em>. Unlike images (grid structure) 
+                    or text (sequential structure), graphs can represent <strong>arbitrary relationships</strong> between entities.
+                </p>
+                
+                <div class="visualization-container">
+                    <div class="viz-panel">
+                        <canvas id="graphBasicsViz"></canvas>
+                        <div class="viz-controls">
+                            <button class="viz-btn active" data-graph="simple">Simple Graph</button>
+                            <button class="viz-btn" data-graph="citation">Citation Network</button>
+                            <button class="viz-btn" data-graph="social">Social Network</button>
+                        </div>
+                    </div>
+                    <div class="viz-explanation">
+                        <h4>Graph Components</h4>
+                        <ul class="component-list">
+                            <li>
+                                <span class="component-icon node-icon"></span>
+                                <div>
+                                    <strong>Nodes (V)</strong>
+                                    <p>Represent entities: papers, users, molecules, etc.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="component-icon edge-icon"></span>
+                                <div>
+                                    <strong>Edges (E)</strong>
+                                    <p>Represent relationships: citations, friendships, bonds</p>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="component-icon feature-icon"></span>
+                                <div>
+                                    <strong>Features (X)</strong>
+                                    <p>Node attributes: text embeddings, properties</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-callout">
+                    <div class="callout-icon">💡</div>
+                    <div class="callout-content">
+                        <h4>Why Graphs Matter</h4>
+                        <p>
+                            Many real-world problems are naturally graph-structured: social networks, molecular structures, 
+                            knowledge graphs, citation networks, and recommendation systems. Traditional ML approaches that 
+                            treat data points as independent miss these crucial relational patterns.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <article class="article-block">
+                <h3>Graph Representation in PyTorch Geometric</h3>
+                <p>
+                    <strong>PyTorch Geometric (PyG)</strong> is the go-to library for Graph Neural Networks in PyTorch. 
+                    Let's see how graphs are represented:
+                </p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">Python</span>
+                        <span class="code-file">graph_basics.py</span>
+                    </div>
+                    <pre><code class="language-python">import torch
+from torch_geometric.data import Data
+
+# Define a simple graph with 4 nodes
+# Node features: each node has a 3-dimensional feature vector
+x = torch.tensor([
+    [1.0, 0.0, 0.0],  # Node 0 features
+    [0.0, 1.0, 0.0],  # Node 1 features  
+    [0.0, 0.0, 1.0],  # Node 2 features
+    [1.0, 1.0, 0.0],  # Node 3 features
+], dtype=torch.float)
+
+# Edge index: defines connections in COO format
+# Shape: [2, num_edges] - first row: source, second row: target
+edge_index = torch.tensor([
+    [0, 1, 1, 2, 2, 3],  # Source nodes
+    [1, 0, 2, 1, 3, 2],  # Target nodes (bidirectional)
+], dtype=torch.long)
+
+# Node labels (for supervised learning)
+y = torch.tensor([0, 0, 1, 1])  # Two clusters
+
+# Create PyG Data object
+data = Data(x=x, edge_index=edge_index, y=y)
+
+print(f"Number of nodes: {data.num_nodes}")      # 4
+print(f"Number of edges: {data.num_edges}")      # 6
+print(f"Node feature dim: {data.num_features}")  # 3
+print(f"Has isolated nodes: {data.has_isolated_nodes()}")
+print(f"Is undirected: {data.is_undirected()}")</code></pre>
+                </div>
+
+                <div class="diagram-container">
+                    <h4>Edge Index Visualization</h4>
+                    <div class="edge-diagram">
+                        <div class="diagram-graph">
+                            <svg viewBox="0 0 200 150" class="diagram-svg">
+                                <!-- Edges -->
+                                <line x1="40" y1="40" x2="100" y2="40" class="diagram-edge"/>
+                                <line x1="100" y1="40" x2="100" y2="110" class="diagram-edge"/>
+                                <line x1="100" y1="110" x2="160" y2="110" class="diagram-edge"/>
+                                <!-- Nodes -->
+                                <circle cx="40" cy="40" r="15" class="diagram-node node-0"/>
+                                <circle cx="100" cy="40" r="15" class="diagram-node node-1"/>
+                                <circle cx="100" cy="110" r="15" class="diagram-node node-2"/>
+                                <circle cx="160" cy="110" r="15" class="diagram-node node-3"/>
+                                <!-- Labels -->
+                                <text x="40" y="45" class="node-label">0</text>
+                                <text x="100" y="45" class="node-label">1</text>
+                                <text x="100" y="115" class="node-label">2</text>
+                                <text x="160" y="115" class="node-label">3</text>
+                            </svg>
+                        </div>
+                        <div class="diagram-matrix">
+                            <table class="edge-table">
+                                <tr><th>edge_index</th><th colspan="6">→</th></tr>
+                                <tr><td>Source</td><td>0</td><td>1</td><td>1</td><td>2</td><td>2</td><td>3</td></tr>
+                                <tr><td>Target</td><td>1</td><td>0</td><td>2</td><td>1</td><td>3</td><td>2</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="article-block">
+                <h3>Text-Attributed Graphs (TAGs)</h3>
+                <p>
+                    In <strong>Text-Attributed Graphs</strong>, each node has associated text that describes it. 
+                    This is common in citation networks (paper abstracts), social networks (user posts), and 
+                    knowledge graphs (entity descriptions).
+                </p>
+
+                <div class="tag-example">
+                    <div class="tag-node">
+                        <div class="tag-node-header">
+                            <span class="tag-node-id">Node 42</span>
+                            <span class="tag-node-label">Neural Networks</span>
+                        </div>
+                        <div class="tag-node-text">
+                            "This paper presents a novel approach to deep learning using 
+                            convolutional neural networks for image classification..."
+                        </div>
+                        <div class="tag-node-features">
+                            <span class="feature-badge">PLM Embedding</span>
+                            <span class="feature-dim">[384 dims]</span>
+                        </div>
+                    </div>
+                    <div class="tag-connections">
+                        <div class="connection-line"></div>
+                        <div class="connection-line"></div>
+                        <div class="connection-line"></div>
+                    </div>
+                    <div class="tag-neighbors">
+                        <div class="tag-neighbor">Neighbor: "Deep learning survey..."</div>
+                        <div class="tag-neighbor">Neighbor: "CNN architectures..."</div>
+                        <div class="tag-neighbor">Neighbor: "Image recognition..."</div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">Python</span>
+                        <span class="code-file">tag_dataset.py</span>
+                    </div>
+                    <pre><code class="language-python">from torch_geometric.datasets import Planetoid
+from sentence_transformers import SentenceTransformer
+
+# Load Cora citation network
+dataset = Planetoid(root='./data', name='Cora')
+data = dataset[0]
+
+print(f"Cora Dataset Statistics:")
+print(f"  Nodes: {data.num_nodes:,}")        # 2,708 papers
+print(f"  Edges: {data.num_edges:,}")        # 10,556 citations  
+print(f"  Features: {data.num_features}")    # 1,433 (bag-of-words)
+print(f"  Classes: {dataset.num_classes}")   # 7 research areas
+
+# Class names in Cora
+CLASS_NAMES = [
+    "Case_Based", "Genetic_Algorithms", "Neural_Networks",
+    "Probabilistic_Methods", "Reinforcement_Learning", 
+    "Rule_Learning", "Theory"
+]
+
+# For TAG datasets, we can encode raw text with PLMs
+# (This is what MARK does for feature enhancement)
+plm = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+
+# Example: encode a paper abstract
+text = "A neural network approach for graph clustering..."
+embedding = plm.encode(text)  # Shape: [384]</code></pre>
+                </div>
+            </article>
+        </section>
+
+        <!-- Section 2: Graph Neural Networks -->
+        <section class="section" id="gnns">
+            <div class="section-header">
+                <span class="section-number">02</span>
+                <h2>Graph Neural Networks: Learning on Graphs</h2>
+                <p class="section-subtitle">Understanding how neural networks can process graph-structured data</p>
+            </div>
+
+            <article class="article-block">
+                <h3>The Core Idea: Message Passing</h3>
+                <p>
+                    Graph Neural Networks work through <strong>message passing</strong>: each node aggregates 
+                    information from its neighbors to update its own representation. This is the key insight 
+                    that enables learning on graphs.
+                </p>
+
+                <div class="message-passing-viz">
+                    <div class="mp-stages">
+                        <div class="mp-stage">
+                            <div class="stage-number">1</div>
+                            <h4>Gather</h4>
+                            <p>Collect neighbor features</p>
+                            <div class="stage-viz gather-viz">
+                                <canvas id="gatherCanvas"></canvas>
+                            </div>
+                        </div>
+                        <div class="mp-arrow">→</div>
+                        <div class="mp-stage">
+                            <div class="stage-number">2</div>
+                            <h4>Aggregate</h4>
+                            <p>Combine (sum/mean/max)</p>
+                            <div class="stage-viz aggregate-viz">
+                                <canvas id="aggregateCanvas"></canvas>
+                            </div>
+                        </div>
+                        <div class="mp-arrow">→</div>
+                        <div class="mp-stage">
+                            <div class="stage-number">3</div>
+                            <h4>Update</h4>
+                            <p>Transform with neural net</p>
+                            <div class="stage-viz update-viz">
+                                <canvas id="updateCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="equation-block">
+                    <h4>Message Passing Framework</h4>
+                    <div class="equation">
+                        <span class="eq-main">h<sub>v</sub><sup>(l+1)</sup> = UPDATE<sup>(l)</sup>(h<sub>v</sub><sup>(l)</sup>, AGGREGATE<sup>(l)</sup>({h<sub>u</sub><sup>(l)</sup> : u ∈ N(v)}))</span>
+                    </div>
+                    <div class="eq-legend">
+                        <span><strong>h<sub>v</sub></strong>: node v's hidden state</span>
+                        <span><strong>N(v)</strong>: neighbors of v</span>
+                        <span><strong>l</strong>: layer index</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="article-block">
+                <h3>Graph Convolutional Networks (GCN)</h3>
+                <p>
+                    The <strong>Graph Convolutional Network</strong> (Kipf & Welling, 2017) is the foundational 
+                    architecture. It uses a simple but effective aggregation with normalized adjacency matrix.
+                </p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">Python</span>
+                        <span class="code-file">gcn_layer.py</span>
+                    </div>
+                    <pre><code class="language-python">import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch_geometric.nn import GCNConv
+
+class GCNEncoder(nn.Module):
+    """
+    A simple 2-layer GCN encoder for node embeddings.
+    This is the backbone used in MARK for graph encoding.
+    """
+    def __init__(self, in_dim: int, hidden_dim: int, out_dim: int):
+        super().__init__()
+        # First GCN layer: input → hidden
+        self.conv1 = GCNConv(in_dim, hidden_dim)
+        self.bn1 = nn.BatchNorm1d(hidden_dim)
+        
+        # Second GCN layer: hidden → output
+        self.conv2 = GCNConv(hidden_dim, out_dim)
+        self.bn2 = nn.BatchNorm1d(out_dim)
+    
+    def forward(self, x, edge_index):
+        # Layer 1: Aggregate + Transform + Normalize + Activate
+        h = self.conv1(x, edge_index)
+        h = self.bn1(h)
+        h = F.relu(h)
+        h = F.dropout(h, p=0.1, training=self.training)
+        
+        # Layer 2: Same pattern
+        h = self.conv2(h, edge_index)
+        h = self.bn2(h)
+        h = F.relu(h)
+        
+        return h
+
+# Usage example
+encoder = GCNEncoder(in_dim=1433, hidden_dim=256, out_dim=128)
+embeddings = encoder(data.x, data.edge_index)
+print(f"Node embeddings shape: {embeddings.shape}")  # [2708, 128]</code></pre>
+                </div>
+
+                <div class="architecture-diagram">
+                    <h4>GCN Layer Operation</h4>
+                    <div class="arch-flow">
+                        <div class="arch-block input">
+                            <span class="block-label">X ∈ ℝ<sup>N×F</sup></span>
+                            <span class="block-desc">Node Features</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-block conv">
+                            <span class="block-label">D̃<sup>-½</sup>ÃD̃<sup>-½</sup>XW</span>
+                            <span class="block-desc">Graph Convolution</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-block norm">
+                            <span class="block-label">BatchNorm</span>
+                            <span class="block-desc">Normalization</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-block act">
+                            <span class="block-label">ReLU</span>
+                            <span class="block-desc">Activation</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-block output">
+                            <span class="block-label">H ∈ ℝ<sup>N×H</sup></span>
+                            <span class="block-desc">Hidden States</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-callout warning">
+                    <div class="callout-icon">⚠️</div>
+                    <div class="callout-content">
+                        <h4>Over-smoothing Problem</h4>
+                        <p>
+                            Deep GCNs suffer from <strong>over-smoothing</strong>: after many layers, all node 
+                            representations converge to be similar, losing discriminative power. This is why 
+                            most GNN architectures use only 2-3 layers.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <article class="article-block">
+                <h3>Contrastive Learning on Graphs</h3>
+                <p>
+                    <strong>Self-supervised contrastive learning</strong> has revolutionized graph representation 
+                    learning. The idea: create two augmented views of the same graph and train the model to 
+                    recognize that corresponding nodes should have similar representations.
+                </p>
+
+                <div class="contrastive-viz">
+                    <div class="view-panel">
+                        <h4>View 1 (Augmented)</h4>
+                        <canvas id="view1Canvas"></canvas>
+                        <div class="aug-badge">Feature Dropout + Edge Drop</div>
+                    </div>
+                    <div class="contrastive-middle">
+                        <div class="contrastive-objective">
+                            <span class="obj-title">NT-Xent Loss</span>
+                            <span class="obj-desc">Maximize agreement</span>
+                        </div>
+                    </div>
+                    <div class="view-panel">
+                        <h4>View 2 (Augmented)</h4>
+                        <canvas id="view2Canvas"></canvas>
+                        <div class="aug-badge">Feature Dropout + Edge Drop</div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">Python</span>
+                        <span class="code-file">contrastive.py</span>
+                    </div>
+                    <pre><code class="language-python">import torch
+import torch.nn.functional as F
+
+def feature_dropout(x: torch.Tensor, p: float = 0.2) -> torch.Tensor:
+    """Randomly drop node features (augmentation)."""
+    mask = torch.bernoulli(torch.ones_like(x) * (1 - p))
+    return x * mask
+
+def edge_dropout(edge_index: torch.Tensor, p: float = 0.2) -> torch.Tensor:
+    """Randomly drop edges (augmentation)."""
+    num_edges = edge_index.size(1)
+    keep_mask = torch.rand(num_edges) > p
+    return edge_index[:, keep_mask]
+
+def nt_xent_loss(z1: torch.Tensor, z2: torch.Tensor, tau: float = 0.5):
+    """
+    NT-Xent (Normalized Temperature-scaled Cross Entropy) Loss.
+    Used in MAGI backbone for contrastive learning.
+    
+    Args:
+        z1, z2: Embeddings from two augmented views [N, D]
+        tau: Temperature parameter (lower = sharper distribution)
+    """
+    # L2 normalize embeddings
+    z1 = F.normalize(z1, p=2, dim=-1)
+    z2 = F.normalize(z2, p=2, dim=-1)
+    
+    N = z1.size(0)
+    
+    # Compute similarity matrix: [N, N]
+    sim_matrix = torch.matmul(z1, z2.t()) / tau
+    
+    # Positive pairs are on the diagonal (same node, different views)
+    labels = torch.arange(N, device=z1.device)
+    
+    # Cross-entropy loss (bidirectional)
+    loss_12 = F.cross_entropy(sim_matrix, labels)
+    loss_21 = F.cross_entropy(sim_matrix.t(), labels)
+    
+    return 0.5 * (loss_12 + loss_21)
+
+# Training loop with contrastive learning
+for epoch in range(100):
+    # Create augmented views
+    x1 = feature_dropout(data.x, p=0.2)
+    x2 = feature_dropout(data.x, p=0.2)
+    e1 = edge_dropout(data.edge_index, p=0.2)
+    e2 = edge_dropout(data.edge_index, p=0.2)
+    
+    # Get embeddings for both views
+    z1 = model(x1, e1)
+    z2 = model(x2, e2)
+    
+    # Contrastive loss
+    loss = nt_xent_loss(z1, z2, tau=0.5)
+    
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()</code></pre>
+                </div>
+            </article>
+        </section>
+
+        <!-- Section 3: Deep Graph Clustering -->
+        <section class="section" id="clustering">
+            <div class="section-header">
+                <span class="section-number">03</span>
+                <h2>Deep Graph Clustering</h2>
+                <p class="section-subtitle">Learning to group nodes without labels using neural networks</p>
+            </div>
+
+            <article class="article-block">
+                <h3>The Clustering Challenge</h3>
+                <p>
+                    <strong>Graph clustering</strong> aims to partition nodes into meaningful groups based on 
+                    both their features and graph structure—<em>without any labels</em>. This is crucial for 
+                    discovering hidden communities in social networks, grouping related papers, or identifying 
+                    functional modules in biological networks.
+                </p>
+
+                <div class="clustering-comparison">
+                    <div class="cluster-method">
+                        <h4>Traditional Clustering</h4>
+                        <canvas id="traditionalClusterViz"></canvas>
+                        <ul>
+                            <li>Uses only node features</li>
+                            <li>Ignores graph structure</li>
+                            <li>K-means, Spectral, etc.</li>
+                        </ul>
+                    </div>
+                    <div class="cluster-method">
+                        <h4>Deep Graph Clustering</h4>
+                        <canvas id="deepClusterViz"></canvas>
+                        <ul>
+                            <li>Learns joint representation</li>
+                            <li>Combines features + structure</li>
+                            <li>End-to-end trainable</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <article class="article-block">
+                <h3>MAGI: Multi-view Alignment for Graph Clustering</h3>
+                <p>
+                    <strong>MAGI</strong> is one of the GNN backbones used in MARK. It combines contrastive 
+                    learning with clustering objectives for self-supervised graph clustering.
+                </p>
+
+                <div class="magi-architecture">
+                    <div class="magi-flow">
+                        <div class="magi-block">
+                            <span class="block-title">Input Graph</span>
+                            <span class="block-content">X, edge_index</span>
+                        </div>
+                        <div class="magi-split">
+                            <div class="magi-branch">
+                                <div class="aug-box">Aug 1</div>
+                                <div class="branch-arrow">↓</div>
+                                <div class="encoder-box">GCN Encoder</div>
+                                <div class="branch-arrow">↓</div>
+                                <div class="proj-box">Projector</div>
+                                <div class="branch-arrow">↓</div>
+                                <div class="z-box">z₁</div>
+                            </div>
+                            <div class="magi-branch">
+                                <div class="aug-box">Aug 2</div>
+                                <div class="branch-arrow">↓</div>
+                                <div class="encoder-box">GCN Encoder</div>
+                                <div class="branch-arrow">↓</div>
+                                <div class="proj-box">Projector</div>
+                                <div class="branch-arrow">↓</div>
+                                <div class="z-box">z₂</div>
+                            </div>
+                        </div>
+                        <div class="magi-losses">
+                            <div class="loss-box contrastive-loss">
+                                <span class="loss-name">L<sub>ali</sub></span>
+                                <span class="loss-desc">NT-Xent Loss</span>
+                            </div>
+                            <span class="loss-plus">+</span>
+                            <div class="loss-box cluster-loss">
+                                <span class="loss-name">L<sub>clu</sub></span>
+                                <span class="loss-desc">Clustering Loss</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">Python</span>
+                        <span class="code-file">magi_backbone.py</span>
+                    </div>
+                    <pre><code class="language-python">class MAGIEncoder(nn.Module):
+    """
+    MAGI: Multi-view Alignment Graph Clustering.
+    Combines contrastive learning with soft clustering.
+    """
+    def __init__(self, in_dim, hidden_dim, proj_dim, num_clusters, 
+                 tau_align=0.5, lambda_clu=1.0):
+        super().__init__()
+        self.tau_align = tau_align      # Temperature for contrastive loss
+        self.lambda_clu = lambda_clu    # Weight for clustering loss
+        
+        # GCN Encoder (2 layers)
+        self.conv1 = GCNConv(in_dim, hidden_dim)
+        self.conv2 = GCNConv(hidden_dim, hidden_dim)
+        self.bn1 = nn.BatchNorm1d(hidden_dim)
+        self.bn2 = nn.BatchNorm1d(hidden_dim)
+        
+        # Projection head (for contrastive learning)
+        self.projector = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.BatchNorm1d(hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, proj_dim),
+        )
+        
+        # Learnable cluster centers
+        self._centers = nn.Parameter(torch.randn(num_clusters, proj_dim))
+    
+    def forward(self, x, edge_index):
+        # GCN encoding
+        h = F.relu(self.bn1(self.conv1(x, edge_index)))
+        h = F.relu(self.bn2(self.conv2(h, edge_index)))
+        
+        # Project and normalize
+        z = self.projector(h)
+        z = F.normalize(z, p=2, dim=-1)
+        return z
+    
+    def _cluster_loss(self, z):
+        """
+        Clustering loss using soft assignments.
+        Uses Student's t-distribution (like t-SNE/DEC).
+        """
+        centers = F.normalize(self._centers, p=2, dim=-1)
+        
+        # Cosine similarity to all centers
+        sim = torch.matmul(z, centers.t())  # [N, K]
+        
+        # Convert to distances (for normalized vectors)
+        dist_sq = 2 - 2 * sim
+        
+        # Soft assignment (t-distribution kernel)
+        q = 1.0 / (1.0 + dist_sq)
+        q = q / q.sum(dim=1, keepdim=True)
+        
+        # Target distribution (sharpen assignments)
+        f = q.sum(dim=0)
+        p = (q ** 2) / f.unsqueeze(0)
+        p = p / p.sum(dim=1, keepdim=True)
+        
+        # KL divergence
+        return F.kl_div(q.log(), p.detach(), reduction='batchmean')
+    
+    def loss_pretrain(self, z1, z2):
+        """Combined loss: L = L_ali + λ * L_clu"""
+        l_align = nt_xent_loss(z1, z2, self.tau_align)
+        l_clu = 0.5 * (self._cluster_loss(z1) + self._cluster_loss(z2))
+        
+        loss = l_align + self.lambda_clu * l_clu
+        return loss, {"Lali": l_align.item(), "Lclu": l_clu.item()}
+    
+    def predict_assign(self, z):
+        """Hard cluster assignment based on nearest center."""
+        centers = F.normalize(self._centers, p=2, dim=-1)
+        sim = torch.matmul(z, centers.t())
+        return sim.argmax(dim=1)</code></pre>
+                </div>
+            </article>
+
+            <article class="article-block">
+                <h3>DMoN: Deep Modularity Networks</h3>
+                <p>
+                    <strong>DMoN</strong> is another backbone that directly optimizes <em>graph modularity</em>—a 
+                    classical measure of community structure quality.
+                </p>
+
+                <div class="equation-block">
+                    <h4>Modularity Objective</h4>
+                    <div class="equation">
+                        <span class="eq-main">Q = 1/(2m) ∑<sub>ij</sub> (A<sub>ij</sub> - d<sub>i</sub>d<sub>j</sub>/(2m)) δ(c<sub>i</sub>, c<sub>j</sub>)</span>
+                    </div>
+                    <div class="eq-legend">
+                        <span><strong>A</strong>: adjacency matrix</span>
+                        <span><strong>d</strong>: node degrees</span>
+                        <span><strong>m</strong>: total edges</span>
+                        <span><strong>c</strong>: cluster assignments</span>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">Python</span>
+                        <span class="code-file">dmon_backbone.py</span>
+                    </div>
+                    <pre><code class="language-python">class DMoNEncoder(nn.Module):
+    """
+    DMoN: Deep Modularity Networks for Graph Clustering.
+    Directly optimizes modularity as the training objective.
+    """
+    def __init__(self, in_dim, hidden_dim, num_clusters, collapse_reg=0.1):
+        super().__init__()
+        self.collapse_reg = collapse_reg
+        self.num_clusters = num_clusters
+        
+        # GCN encoder
+        self.conv1 = GCNConv(in_dim, hidden_dim)
+        self.conv2 = GCNConv(hidden_dim, hidden_dim)
+        
+        # Soft assignment head
+        self.assignment = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, num_clusters),
+        )
+    
+    def forward(self, x, edge_index):
+        # Encode nodes
+        h = F.relu(self.conv1(x, edge_index))
+        h = F.relu(self.conv2(h, edge_index))
+        
+        # Soft cluster assignments
+        logits = self.assignment(h)
+        S = F.softmax(logits, dim=-1)  # [N, K]
+        return h, S
+    
+    def _compute_modularity(self, S, edge_index, num_nodes):
+        """Differentiable modularity computation."""
+        row, col = edge_index
+        
+        # A @ S (sparse-dense multiplication)
+        A_S = torch.zeros(num_nodes, self.num_clusters, device=S.device)
+        A_S.index_add_(0, row, S[col])
+        
+        # Degrees
+        degrees = torch.zeros(num_nodes, device=S.device)
+        degrees.index_add_(0, row, torch.ones(len(row), device=S.device))
+        
+        m = degrees.sum() / 2 + 1e-8
+        
+        # Tr(S^T A S) and degree correction
+        S_A_S = torch.matmul(S.t(), A_S)
+        S_d = torch.matmul(S.t(), degrees.unsqueeze(1))
+        degree_term = torch.matmul(S_d, S_d.t()) / (2 * m)
+        
+        modularity = (torch.trace(S_A_S) - torch.trace(degree_term)) / (2 * m)
+        return modularity
+    
+    def _collapse_loss(self, S):
+        """Prevent all nodes going to one cluster."""
+        cluster_sizes = S.mean(dim=0)
+        entropy = -(cluster_sizes * torch.log(cluster_sizes + 1e-8)).sum()
+        return -entropy  # Maximize entropy
+    
+    def loss_pretrain(self, S, edge_index):
+        """Loss = -Modularity + collapse_reg * Collapse"""
+        modularity = self._compute_modularity(S, edge_index, S.size(0))
+        collapse = self._collapse_loss(S)
+        
+        loss = -modularity + self.collapse_reg * collapse
+        return loss, {"Modularity": modularity.item()}</code></pre>
+                </div>
+            </article>
+
+            <article class="article-block">
+                <h3>Evaluation Metrics</h3>
+                <p>
+                    Since clustering is unsupervised, we need special metrics that handle the 
+                    label permutation problem (cluster 1 might correspond to true label 3, etc.).
+                </p>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">🎯</div>
+                        <h4>ACC (Accuracy)</h4>
+                        <p>Uses Hungarian algorithm for optimal label matching, then computes accuracy.</p>
+                        <code>acc = match(pred, true).sum() / N</code>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">📊</div>
+                        <h4>NMI (Normalized Mutual Information)</h4>
+                        <p>Measures information shared between predictions and ground truth.</p>
+                        <code>NMI = 2·I(Y;C) / (H(Y)+H(C))</code>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">🔗</div>
+                        <h4>ARI (Adjusted Rand Index)</h4>
+                        <p>Measures agreement adjusted for chance.</p>
+                        <code>ARI = (RI - E[RI]) / (max(RI) - E[RI])</code>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">⚖️</div>
+                        <h4>Macro F1</h4>
+                        <p>Average F1-score across all classes (after matching).</p>
+                        <code>F1 = mean(2·P·R / (P+R))</code>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- Section 4: MARK Framework -->
+        <section class="section" id="mark">
+            <div class="section-header">
+                <span class="section-number">04</span>
+                <h2>The MARK Framework</h2>
+                <p class="section-subtitle">Multi-Agent Refinement for Knowledge-enhanced Graph Clustering</p>
+            </div>
+
+            <article class="article-block">
+                <h3>The Key Insight</h3>
+                <p>
+                    Traditional deep graph clustering methods have a fundamental limitation: they learn from 
+                    <strong>fixed features</strong> without understanding the semantic meaning of the data. 
+                    MARK introduces <strong>LLM agents</strong> that can reason about text-attributed graphs 
+                    and iteratively refine both the representations and cluster assignments.
+                </p>
+
+                <div class="insight-box">
+                    <div class="insight-left">
+                        <h4>Problem</h4>
+                        <p>GNN clusters nodes that are <em>structurally similar</em> but may have <em>semantically different</em> content</p>
+                    </div>
+                    <div class="insight-arrow">→</div>
+                    <div class="insight-right">
+                        <h4>Solution</h4>
+                        <p>Use LLMs to understand semantic content and provide feedback to refine clusters</p>
+                    </div>
+                </div>
+            </article>
+
+            <article class="article-block">
+                <h3>The Three Agents</h3>
+                <p>
+                    MARK uses three specialized LLM agents that collaborate to improve clustering quality:
+                </p>
+
+                <div class="agents-showcase">
+                    <div class="agent-card concept-agent">
+                        <div class="agent-header">
+                            <span class="agent-icon">🧠</span>
+                            <h4>Concept Agent</h4>
+                        </div>
+                        <div class="agent-body">
+                            <p class="agent-desc">Induces cluster concepts from top-confident samples</p>
+                            <div class="agent-io">
+                                <div class="io-box input">
+                                    <strong>Input:</strong>
+                                    <span>Top-N texts per cluster</span>
+                                </div>
+                                <div class="io-box output">
+                                    <strong>Output:</strong>
+                                    <span>Cluster title + keywords</span>
+                                </div>
+                            </div>
+                            <div class="agent-example">
+                                <span class="example-label">Example Output:</span>
+                                <code>{"title": "Neural Networks", "keywords": ["deep learning", "backprop", "CNN"]}</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="agent-card generation-agent">
+                        <div class="agent-header">
+                            <span class="agent-icon">✨</span>
+                            <h4>Generation Agent</h4>
+                        </div>
+                        <div class="agent-body">
+                            <p class="agent-desc">Synthesizes virtual text using neighbor context</p>
+                            <div class="agent-io">
+                                <div class="io-box input">
+                                    <strong>Input:</strong>
+                                    <span>Node text + K neighbors</span>
+                                </div>
+                                <div class="io-box output">
+                                    <strong>Output:</strong>
+                                    <span>Synthetic summary</span>
+                                </div>
+                            </div>
+                            <div class="agent-example">
+                                <span class="example-label">Purpose:</span>
+                                <code>Augment uncertain nodes with neighborhood knowledge</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="agent-card inference-agent">
+                        <div class="agent-header">
+                            <span class="agent-icon">🔍</span>
+                            <h4>Inference Agent</h4>
+                        </div>
+                        <div class="agent-body">
+                            <p class="agent-desc">Classifies nodes and filters by consistency</p>
+                            <div class="agent-io">
+                                <div class="io-box input">
+                                    <strong>Input:</strong>
+                                    <span>Original + synthetic text</span>
+                                </div>
+                                <div class="io-box output">
+                                    <strong>Output:</strong>
+                                    <span>Cluster ID + confidence</span>
+                                </div>
+                            </div>
+                            <div class="agent-example">
+                                <span class="example-label">Filter R:</span>
+                                <code>Keep nodes where original == synthetic prediction</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="article-block">
+                <h3>The MARK Training Loop</h3>
+                
+                <div class="pipeline-viz">
+                    <div class="pipeline-stage">
+                        <div class="stage-header">
+                            <span class="stage-num">1</span>
+                            <h4>Pretrain GNN</h4>
+                        </div>
+                        <p>Self-supervised contrastive learning on graph structure</p>
+                    </div>
+                    <div class="pipeline-connector"></div>
+                    <div class="pipeline-stage">
+                        <div class="stage-header">
+                            <span class="stage-num">2</span>
+                            <h4>Find Uncertain Nodes (S)</h4>
+                        </div>
+                        <p>Nodes with disagreement between augmented views</p>
+                    </div>
+                    <div class="pipeline-connector"></div>
+                    <div class="pipeline-stage agent-stage">
+                        <div class="stage-header">
+                            <span class="stage-num">3</span>
+                            <h4>Agent Collaboration</h4>
+                        </div>
+                        <p>Concept → Generation → Inference agents process S</p>
+                    </div>
+                    <div class="pipeline-connector"></div>
+                    <div class="pipeline-stage">
+                        <div class="stage-header">
+                            <span class="stage-num">4</span>
+                            <h4>Feature Update</h4>
+                        </div>
+                        <p>Update node features with PLM embeddings of summaries</p>
+                    </div>
+                    <div class="pipeline-connector"></div>
+                    <div class="pipeline-stage">
+                        <div class="stage-header">
+                            <span class="stage-num">5</span>
+                            <h4>Ranking Calibration</h4>
+                        </div>
+                        <p>Fine-tune with L<sub>ft</sub> = L<sub>eng</sub> + L<sub>cal</sub></p>
+                    </div>
+                    <div class="pipeline-loop">
+                        <span>Repeat T times</span>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">Python</span>
+                        <span class="code-file">mark_training.py</span>
+                    </div>
+                    <pre><code class="language-python">def select_uncertain_nodes(model, x, edge_index):
+    """
+    Find uncertain nodes via view disagreement.
+    Nodes assigned to different clusters in different 
+    augmented views are considered uncertain.
+    """
+    model.eval()
+    with torch.no_grad():
+        # Create two augmented views
+        x1, e1 = feature_dropout(x), edge_dropout(edge_index)
+        x2, e2 = feature_dropout(x), edge_dropout(edge_index)
+        
+        # Get cluster assignments for each view
+        z1 = model(x1, e1)
+        z2 = model(x2, e2)
+        c1 = model.predict_assign(z1)
+        c2 = model.predict_assign(z2)
+        
+        # S = nodes where assignments disagree
+        S = (c1 != c2).nonzero(as_tuple=False).view(-1)
+    
+    return S
+
+# Main MARK training loop
+for step in range(1, T + 1):
+    # Step 1: Find uncertain nodes
+    S = select_uncertain_nodes(model, x, edge_index)
+    print(f"Found {len(S)} uncertain nodes")
+    
+    if step % T_prime == 0:  # Agent collaboration period
+        # Step 2: Get current embeddings and assignments
+        with torch.no_grad():
+            H = model(x, edge_index)
+            assign = model.predict_assign(H)
+        
+        # Step 3a: Concept Agent - induce cluster concepts
+        concepts = induce_concepts(H, assign, top_n=50, texts=texts)
+        # Example: {0: {"title": "Neural Networks", "keywords": [...]}}
+        
+        # Step 3b: Generation Agent - synthesize for uncertain nodes
+        summaries = synthesize_for_S(S, neighbors, texts, concepts, k=10)
+        # Example: {42: "This paper studies neural network optimization..."}
+        
+        # Step 3c: Inference Agent - classify and filter
+        R, stats, pred_labels = classify_consistency(
+            S, raw_texts=texts, synth_texts=summaries, concepts=concepts
+        )
+        # R = reliable nodes (original and synthetic predict same cluster)
+        
+        # Step 4: Update features for nodes in R
+        for node in R:
+            if summaries.get(node):
+                new_emb = plm.encode(summaries[node])
+                x[node] = 0.7 * x[node] + 0.3 * torch.tensor(new_emb)
+    
+    # Step 5: Fine-tune with ranking calibration
+    for epoch in range(ft_epochs):
+        z = model(x, edge_index)
+        assign = model.predict_assign(z)
+        
+        # Engine loss (contrastive + clustering)
+        L_eng = compute_engine_loss(model, x, edge_index)
+        
+        # Calibration loss (for reliable nodes)
+        L_cal = calibration_loss(z, centers, assign, temperature=0.1, R=R)
+        
+        # Total loss
+        loss = L_eng + L_cal
+        loss.backward()
+        optimizer.step()</code></pre>
+                </div>
+            </article>
+
+            <article class="article-block">
+                <h3>Ranking Calibration Loss</h3>
+                <p>
+                    The key innovation in MARK's fine-tuning is the <strong>ranking calibration loss</strong>, 
+                    which uses LLM predictions to guide the GNN towards better cluster assignments.
+                </p>
+
+                <div class="equation-block">
+                    <h4>Calibration Loss</h4>
+                    <div class="equation">
+                        <span class="eq-main">L<sub>cal</sub> = -1/|R| ∑<sub>i∈R</sub> log( exp(sim(h<sub>i</sub>, μ<sub>F</sub>)/τ) / ∑<sub>k</sub> exp(sim(h<sub>i</sub>, μ<sub>k</sub>)/τ) )</span>
+                    </div>
+                    <div class="eq-legend">
+                        <span><strong>R</strong>: reliable nodes (consistent predictions)</span>
+                        <span><strong>μ<sub>F</sub></strong>: assigned cluster center</span>
+                        <span><strong>τ</strong>: temperature</span>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">Python</span>
+                        <span class="code-file">ranking.py</span>
+                    </div>
+                    <pre><code class="language-python">def calibration_loss(z, centers, assign, temperature, R=None):
+    """
+    Ranking-based calibration loss from MARK paper.
+    
+    Brings uncertain nodes closer to their assigned cluster center
+    while pushing them away from other clusters.
+    """
+    # Normalize embeddings and centers
+    z_n = F.normalize(z, p=2, dim=-1)
+    c_n = F.normalize(centers, p=2, dim=-1)
+    
+    # Filter to reliable nodes only
+    if R is not None and len(R) > 0:
+        R_list = sorted(list(R))
+        z_n = z_n[R_list]
+        assign = assign[R_list]
+    
+    if z_n.size(0) == 0:
+        return torch.tensor(0.0, device=z.device)
+    
+    # Compute similarity logits: [N, K]
+    logits = torch.matmul(z_n, c_n.t()) / temperature
+    
+    # Cross-entropy loss with LLM-predicted clusters as targets
+    loss = F.cross_entropy(logits, assign)
+    
+    return loss</code></pre>
+                </div>
+            </article>
+
+            <article class="article-block">
+                <h3>Results</h3>
+                <p>
+                    MARK achieves state-of-the-art results on multiple Text-Attributed Graph benchmarks:
+                </p>
+
+                <div class="results-table-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Dataset</th>
+                                <th>Nodes</th>
+                                <th>Edges</th>
+                                <th>Classes</th>
+                                <th>MAGI (Baseline)</th>
+                                <th>MARK (Ours)</th>
+                                <th>Gain</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Cora</strong></td>
+                                <td>2,708</td>
+                                <td>10,556</td>
+                                <td>7</td>
+                                <td>70.2%</td>
+                                <td class="highlight">78.5%</td>
+                                <td class="gain">+8.3%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CiteSeer</strong></td>
+                                <td>3,327</td>
+                                <td>9,104</td>
+                                <td>6</td>
+                                <td>65.8%</td>
+                                <td class="highlight">71.2%</td>
+                                <td class="gain">+5.4%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PubMed</strong></td>
+                                <td>19,717</td>
+                                <td>88,648</td>
+                                <td>3</td>
+                                <td>68.4%</td>
+                                <td class="highlight">73.9%</td>
+                                <td class="gain">+5.5%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>WikiCS</strong></td>
+                                <td>11,701</td>
+                                <td>216,123</td>
+                                <td>10</td>
+                                <td>52.1%</td>
+                                <td class="highlight">58.7%</td>
+                                <td class="gain">+6.6%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="resultsChart"></canvas>
+                </div>
+            </article>
+        </section>
+
+        <!-- Section 5: Code Walkthrough -->
+        <section class="section" id="code">
+            <div class="section-header">
+                <span class="section-number">05</span>
+                <h2>Implementation Deep Dive</h2>
+                <p class="section-subtitle">Complete code walkthrough of the MARK pipeline</p>
+            </div>
+
+            <article class="article-block">
+                <h3>Project Structure</h3>
+                <div class="file-tree">
+                    <div class="tree-item folder open">
+                        <span class="folder-icon">📁</span> MARK-implementation/
+                        <div class="tree-children">
+                            <div class="tree-item folder">
+                                <span class="folder-icon">📁</span> mark/
+                                <div class="tree-children">
+                                    <div class="tree-item file" data-file="datasets"><span class="file-icon">🐍</span> <span class="file-name">datasets.py</span> <span class="file-desc">— TAG data loading</span></div>
+                                    <div class="tree-item file" data-file="augment"><span class="file-icon">🐍</span> <span class="file-name">augment.py</span> <span class="file-desc">— Feature/edge dropout</span></div>
+                                    <div class="tree-item file" data-file="metrics"><span class="file-icon">🐍</span> <span class="file-name">metrics.py</span> <span class="file-desc">— ACC, NMI, ARI, F1</span></div>
+                                    <div class="tree-item file" data-file="ranking"><span class="file-icon">🐍</span> <span class="file-name">ranking.py</span> <span class="file-desc">— Calibration loss</span></div>
+                                    <div class="tree-item folder">
+                                        <span class="folder-icon">📁</span> backbones/
+                                        <div class="tree-children">
+                                            <div class="tree-item file" data-file="magi"><span class="file-icon">🐍</span> <span class="file-name">magi.py</span> <span class="file-desc">— MAGI encoder</span></div>
+                                            <div class="tree-item file" data-file="dmon"><span class="file-icon">🐍</span> <span class="file-name">dmon.py</span> <span class="file-desc">— DMoN encoder</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="tree-item folder">
+                                        <span class="folder-icon">📁</span> agents/
+                                        <div class="tree-children">
+                                            <div class="tree-item file" data-file="concept"><span class="file-icon">🐍</span> <span class="file-name">concept.py</span> <span class="file-desc">— Concept induction</span></div>
+                                            <div class="tree-item file" data-file="generation"><span class="file-icon">🐍</span> <span class="file-name">generation.py</span> <span class="file-desc">— Text synthesis</span></div>
+                                            <div class="tree-item file" data-file="inference"><span class="file-icon">🐍</span> <span class="file-name">inference.py</span> <span class="file-desc">— Classification</span></div>
+                                            <div class="tree-item file" data-file="prompts"><span class="file-icon">🐍</span> <span class="file-name">prompts.py</span> <span class="file-desc">— LLM prompts</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tree-item folder">
+                                <span class="folder-icon">📁</span> scripts/
+                                <div class="tree-children">
+                                    <div class="tree-item file" data-file="pretrain"><span class="file-icon">🐍</span> <span class="file-name">pretrain.py</span> <span class="file-desc">— Pretraining script</span></div>
+                                    <div class="tree-item file" data-file="run_mark"><span class="file-icon">🐍</span> <span class="file-name">run_mark.py</span> <span class="file-desc">— Main MARK loop</span></div>
+                                    <div class="tree-item file" data-file="eval"><span class="file-icon">🐍</span> <span class="file-name">eval.py</span> <span class="file-desc">— Evaluation</span></div>
+                                </div>
+                            </div>
+                            <div class="tree-item folder">
+                                <span class="folder-icon">📁</span> configs/
+                                <div class="tree-children">
+                                    <div class="tree-item file" data-file="data_yaml"><span class="file-icon">⚙️</span> <span class="file-name">data.yaml</span></div>
+                                    <div class="tree-item file" data-file="engine_yaml"><span class="file-icon">⚙️</span> <span class="file-name">engine.yaml</span></div>
+                                    <div class="tree-item file" data-file="agents_yaml"><span class="file-icon">⚙️</span> <span class="file-name">agents.yaml</span></div>
+                                    <div class="tree-item file" data-file="train_yaml"><span class="file-icon">⚙️</span> <span class="file-name">train.yaml</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="file-tree-hint">💡 Click on any file to view its source code</p>
+            </article>
+
+            <article class="article-block">
+                <h3>LLM Agent Prompts</h3>
+                <p>
+                    The quality of MARK depends heavily on well-designed prompts for each agent:
+                </p>
+
+                <div class="prompt-showcase">
+                    <div class="prompt-card">
+                        <h4>🧠 Concept Agent Prompt</h4>
+                        <div class="prompt-content">
+                            <pre>You are an AI assistant specializing in text induction. 
+Your task is to generate a topic name based on the provided input texts.
+
+Analyze the commonalities and core content of the samples 
+provided and identify the main theme or topic they share.
+
+Your response must be ONLY a JSON object with the following structure:
+{
+    "cluster_title": "A short, descriptive topic name (2-5 words)",
+    "keywords": ["keyword1", "keyword2", "keyword3"]
+}
+
+Be concise and precise. The topic name should capture 
+the essence of all samples.</pre>
+                        </div>
+                    </div>
+
+                    <div class="prompt-card">
+                        <h4>✨ Generation Agent Prompt</h4>
+                        <div class="prompt-content">
+                            <pre>You are an AI assistant specializing in text synthesis. 
+Your task is to create a virtual summary text based on 
+a target node and its neighbors in a graph.
+
+Given information about a target article/node and its 
+neighboring nodes, generate a concise summary that:
+1. Captures the main topic of the target
+2. Incorporates relevant information from neighbors
+3. Maintains consistency with the cluster concepts provided
+
+Your response must be ONLY a JSON object:
+{
+    "summary": "A 2-3 sentence summary that synthesizes 
+    the target with neighborhood context"
+}</pre>
+                        </div>
+                    </div>
+
+                    <div class="prompt-card">
+                        <h4>🔍 Inference Agent Prompt</h4>
+                        <div class="prompt-content">
+                            <pre>You are an AI assistant specializing in text classification. 
+Your task is to identify the most likely cluster to which 
+a given text belongs.
+
+You will be given:
+1. An original text to classify
+2. A synthetic summary of the text (with neighborhood info)
+3. A list of available cluster concepts with titles and keywords
+
+Analyze both texts. Determine which cluster best matches.
+
+Your response must be ONLY a JSON object:
+{
+    "cluster_id": <integer cluster number>,
+    "confidence": <float between 0.0 and 1.0>
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="article-block">
+                <h3>Running MARK</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">Bash</span>
+                        <span class="code-file">terminal</span>
+                    </div>
+                    <pre><code class="language-bash"># 1. Install dependencies
+pip install torch torch-geometric torchmetrics scikit-learn
+pip install sentence-transformers openai networkx pyyaml tqdm
+
+# 2. Set data directory
+export TORCH_GEOMETRIC_HOME=./data
+
+# 3. Check data loading
+python scripts/check_data.py
+
+# 4. Pretrain GNN backbone (100 epochs)
+python scripts/pretrain.py
+
+# 5. Run MARK training loop (3 steps)
+python scripts/run_mark.py
+
+# 6. Evaluate final metrics
+python scripts/eval.py</code></pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">YAML</span>
+                        <span class="code-file">configs/engine.yaml</span>
+                    </div>
+                    <pre><code class="language-yaml"># GNN Backbone Configuration
+backbone: magi        # options: magi | dmon
+hidden_dim: 256       # Hidden layer dimension
+proj_dim: 128         # Projection dimension
+num_clusters: 0       # 0 => infer from dataset labels
+
+# Loss weights
+tau_align: 0.5        # Temperature for NT-Xent
+lambda_clu: 0.5       # Weight for clustering loss
+t_rank: 0.1           # Temperature for calibration
+
+# Architecture
+num_layers: 2         # Number of GCN layers
+dropout: 0.1          # Dropout rate
+
+# Augmentation
+feat_drop: 0.2        # Feature dropout probability
+edge_drop: 0.2        # Edge dropout probability</code></pre>
+                </div>
+            </article>
+        </section>
+
+        <!-- Conclusion -->
+        <section class="section conclusion">
+            <div class="conclusion-content">
+                <h2>Key Takeaways</h2>
+                <div class="takeaways">
+                    <div class="takeaway">
+                        <span class="takeaway-num">1</span>
+                        <p><strong>Graphs are powerful</strong> — They capture relational structure that traditional ML ignores</p>
+                    </div>
+                    <div class="takeaway">
+                        <span class="takeaway-num">2</span>
+                        <p><strong>GNNs learn via message passing</strong> — Aggregating neighbor information is the key operation</p>
+                    </div>
+                    <div class="takeaway">
+                        <span class="takeaway-num">3</span>
+                        <p><strong>Contrastive learning works on graphs</strong> — Augmented views provide self-supervision</p>
+                    </div>
+                    <div class="takeaway">
+                        <span class="takeaway-num">4</span>
+                        <p><strong>LLMs can enhance GNNs</strong> — MARK shows multi-agent collaboration improves clustering</p>
+                    </div>
+                </div>
+
+                <div class="cta-box">
+                    <h3>Ready to try MARK?</h3>
+                    <p>Clone the repository and run the code yourself!</p>
+                    <a href="https://github.com/Quartz-Admirer/MARK-implementation" class="btn btn-primary github-link" target="_blank">View on GitHub</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="brand-icon">◈</span>
+                <span>MARK Framework</span>
+            </div>
+            <p class="footer-text">
+                Based on the paper: "Multi-Agent Refinement for Graph Clustering with LLM-based Knowledge" 
+                (ACL 2025 Findings)
+            </p>
+            <div class="footer-links">
+                <a href="https://aclanthology.org/2025.findings-acl.314/" target="_blank" id="paper-link">Paper</a>
+                <a href="https://github.com/yourusername/MARK-implementation" target="_blank" class="github-link">Code</a>
+                <a href="#" id="citation-link">Citation</a>
+            </div>
+            
+            <!-- Citation Modal -->
+            <div id="citationModal" class="citation-modal" style="display: none;">
+                <div class="citation-modal-content">
+                    <div class="citation-modal-header">
+                        <span>📋 Citation</span>
+                        <button class="citation-modal-close">&times;</button>
+                    </div>
+                    <div class="citation-modal-body">
+                        <pre id="citationText">@inproceedings{mark2025,
+  title={Multi-Agent Refinement for Graph Clustering with LLM-based Knowledge},
+  author={Author Names},
+  booktitle={Findings of the Association for Computational Linguistics: ACL 2025},
+  year={2025}
+}</pre>
+                        <button class="btn btn-primary copy-citation">Copy to Clipboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>
+
