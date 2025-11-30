@@ -1961,3 +1961,34 @@ body {
     text-align: center;
 }
 
+/* Architecture Image */
+.architecture-image {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.architecture-image h4 {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+}
+
+.architecture-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-subtle);
+    background: #fff;
+    padding: 1rem;
+}
+
+.image-caption {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    margin-top: 1rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    font-style: italic;
+}
+

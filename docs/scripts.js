@@ -1842,23 +1842,45 @@ function initResultsChart() {
     if (!ctx) return;
     
     new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
-            labels: ['Cora', 'CiteSeer', 'PubMed', 'WikiCS'],
+            labels: ['MAGI', 'Pre-Train', 'Step 1', 'Step 2', 'Step 3'],
             datasets: [
                 {
-                    label: 'MAGI (Baseline)',
-                    data: [70.2, 65.8, 68.4, 52.1],
-                    backgroundColor: 'rgba(148, 163, 184, 0.5)',
-                    borderColor: 'rgba(148, 163, 184, 1)',
-                    borderWidth: 1,
+                    label: 'ACC',
+                    data: [66.4, 64.99, 76.77, 83.82, 88.11],
+                    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                    borderColor: 'rgba(245, 158, 11, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
                 },
                 {
-                    label: 'MARK (Ours)',
-                    data: [78.5, 71.2, 73.9, 58.7],
-                    backgroundColor: 'rgba(245, 158, 11, 0.7)',
-                    borderColor: 'rgba(245, 158, 11, 1)',
-                    borderWidth: 1,
+                    label: 'NMI',
+                    data: [52.9, 47.95, 58.96, 67.42, 73.24],
+                    backgroundColor: 'rgba(6, 182, 212, 0.2)',
+                    borderColor: 'rgba(6, 182, 212, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
+                },
+                {
+                    label: 'ARI',
+                    data: [46.4, 39.53, 56.58, 67.09, 75.69],
+                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                    borderColor: 'rgba(16, 185, 129, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
+                },
+                {
+                    label: 'F1',
+                    data: [61.4, 63.85, 72.26, 82.85, 86.86],
+                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                    borderColor: 'rgba(139, 92, 246, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
                 },
             ],
         },
@@ -1876,7 +1898,7 @@ function initResultsChart() {
                 },
                 title: {
                     display: true,
-                    text: 'Clustering Accuracy (%) Comparison',
+                    text: 'MARK Training Progression on Cora (All Metrics %)',
                     color: '#f8fafc',
                     font: {
                         size: 16,

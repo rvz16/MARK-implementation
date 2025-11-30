@@ -882,6 +882,15 @@ for epoch in range(100):
                         <p>Use LLMs to understand semantic content and provide feedback to refine clusters</p>
                     </div>
                 </div>
+
+                <div class="architecture-image">
+                    <h4>MARK Framework Architecture</h4>
+                    <img src="images/mark.png" alt="MARK Framework Architecture - Multi-agent collaboration with Concept, Generation, and Inference agents connected to Graph Clustering Engine" />
+                    <p class="image-caption">
+                        Overview of the MARK framework: Three specialized LLM agents (Concept, Generation, Inference) 
+                        collaborate with the Graph Clustering Engine to iteratively refine cluster assignments and node representations.
+                    </p>
+                </div>
             </article>
 
             <article class="article-block">
@@ -1146,60 +1155,107 @@ for step in range(1, T + 1):
             </article>
 
             <article class="article-block">
-                <h3>Results</h3>
+                <h3>Results on Cora Dataset</h3>
                 <p>
-                    MARK achieves state-of-the-art results on multiple Text-Attributed Graph benchmarks:
+                    We evaluated MARK on the Cora citation network dataset. The table shows performance improvement 
+                    across training steps, demonstrating the effectiveness of multi-agent collaboration:
                 </p>
 
+                <h4>Training Progression</h4>
                 <div class="results-table-container">
                     <table class="results-table">
                         <thead>
                             <tr>
-                                <th>Dataset</th>
-                                <th>Nodes</th>
-                                <th>Edges</th>
-                                <th>Classes</th>
-                                <th>MAGI (Baseline)</th>
-                                <th>MARK (Ours)</th>
-                                <th>Gain</th>
+                                <th>Metric</th>
+                                <th>MAGI</th>
+                                <th>Pre-Train</th>
+                                <th>Step 1</th>
+                                <th>Step 2</th>
+                                <th>Step 3 (Final)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>Cora</strong></td>
-                                <td>2,708</td>
-                                <td>10,556</td>
-                                <td>7</td>
-                                <td>70.2%</td>
-                                <td class="highlight">78.5%</td>
-                                <td class="gain">+8.3%</td>
+                                <td><strong>ACC</strong></td>
+                                <td>0.664</td>
+                                <td>0.6499</td>
+                                <td>0.7677</td>
+                                <td>0.8382</td>
+                                <td class="highlight">0.8811</td>
                             </tr>
                             <tr>
-                                <td><strong>CiteSeer</strong></td>
-                                <td>3,327</td>
-                                <td>9,104</td>
-                                <td>6</td>
-                                <td>65.8%</td>
-                                <td class="highlight">71.2%</td>
-                                <td class="gain">+5.4%</td>
+                                <td><strong>NMI</strong></td>
+                                <td>0.529</td>
+                                <td>0.4795</td>
+                                <td>0.5896</td>
+                                <td>0.6742</td>
+                                <td class="highlight">0.7324</td>
                             </tr>
                             <tr>
-                                <td><strong>PubMed</strong></td>
-                                <td>19,717</td>
-                                <td>88,648</td>
-                                <td>3</td>
-                                <td>68.4%</td>
-                                <td class="highlight">73.9%</td>
-                                <td class="gain">+5.5%</td>
+                                <td><strong>ARI</strong></td>
+                                <td>0.464</td>
+                                <td>0.3953</td>
+                                <td>0.5658</td>
+                                <td>0.6709</td>
+                                <td class="highlight">0.7569</td>
                             </tr>
                             <tr>
-                                <td><strong>WikiCS</strong></td>
-                                <td>11,701</td>
-                                <td>216,123</td>
-                                <td>10</td>
-                                <td>52.1%</td>
-                                <td class="highlight">58.7%</td>
-                                <td class="gain">+6.6%</td>
+                                <td><strong>F1</strong></td>
+                                <td>0.614</td>
+                                <td>0.6385</td>
+                                <td>0.7226</td>
+                                <td>0.8285</td>
+                                <td class="highlight">0.8686</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>Comparison with Original Paper</h4>
+                <div class="results-table-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Pre-Train (Paper)</th>
+                                <th>Pre-Train (Ours)</th>
+                                <th>MARK-MAGI (Paper)</th>
+                                <th>MARK-MAGI (Ours)</th>
+                                <th>Improvement</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>ACC</strong></td>
+                                <td>0.697</td>
+                                <td>0.6499</td>
+                                <td>0.713</td>
+                                <td class="highlight">0.7677</td>
+                                <td class="gain">+5.47%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>NMI</strong></td>
+                                <td>0.533</td>
+                                <td>0.4795</td>
+                                <td>0.578</td>
+                                <td class="highlight">0.5896</td>
+                                <td class="gain">+1.16%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ARI</strong></td>
+                                <td>0.489</td>
+                                <td>0.3953</td>
+                                <td>0.490</td>
+                                <td class="highlight">0.5658</td>
+                                <td class="gain">+7.58%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>F1</strong></td>
+                                <td>0.644</td>
+                                <td>0.6385</td>
+                                <td>0.670</td>
+                                <td class="highlight">0.7226</td>
+                                <td class="gain">+5.26%</td>
                             </tr>
                         </tbody>
                     </table>
