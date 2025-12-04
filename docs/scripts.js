@@ -232,8 +232,10 @@ def compute_uncertainty_scores(
     entropy = -(probs * torch.log(probs + 1e-8)).sum(dim=-1)
     return entropy`,
 
-    // mark/backbones/magi.py
-    magi: `import torch
+    // mark/backbones/magi.py (полный реальный код)
+    magi: `from typing import Tuple, Dict, Optional
+
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
@@ -243,8 +245,10 @@ class MAGIEncoder(nn.Module):
     """
     MAGI: Multi-view Alignment Graph Clustering with Instance-level supervision.
     
-    Combines contrastive learning (NT-Xent) with clustering objectives.
-    Uses dual-view augmentation for self-supervised learning.
+    Based on the paper's description:
+    - Uses dual-view contrastive learning with NT-Xent loss
+    - Includes clustering loss for cluster center alignment
+    - Supports proper center initialization with K-means
     """
     def __init__(
         self,
@@ -261,19 +265,23 @@ class MAGIEncoder(nn.Module):
         self.tau_align = tau_align
         self.lambda_clu = lambda_clu
         self.num_clusters = num_clusters
+        self.proj_dim = proj_dim
+        self.dropout = dropout
         
         # Multi-layer GCN encoder
         self.convs = nn.ModuleList()
         self.bns = nn.ModuleList()
         
+        # First layer
         self.convs.append(GCNConv(in_dim, hidden_dim))
         self.bns.append(nn.BatchNorm1d(hidden_dim))
         
+        # Additional layers
         for _ in range(num_layers - 1):
             self.convs.append(GCNConv(hidden_dim, hidden_dim))
             self.bns.append(nn.BatchNorm1d(hidden_dim))
         
-        # Projection head
+        # Projection head (2-layer MLP)
         self.projector = nn.Sequential(
             nn.Linear(hidden_dim, hidden_dim),
             nn.BatchNorm1d(hidden_dim),
@@ -282,17 +290,34 @@ class MAGIEncoder(nn.Module):
             nn.Linear(hidden_dim, proj_dim),
         )
         
-        # Learnable cluster centers
+        # Cluster centers (learnable parameters)
         self._centers = nn.Parameter(torch.randn(num_clusters, proj_dim))
+        self._centers_initialized = False
+        
+    def _encode(self, x: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
+        """GCN encoding with batch norm and activation."""
+        h = x
+        for i, (conv, bn) in enumerate(zip(self.convs, self.bns)):
+            h = conv(h, edge_index)
+            h = bn(h)
+            h = F.relu(h)
+            if self.dropout > 0 and self.training:
+                h = F.dropout(h, p=self.dropout, training=True)
+        return h
 
     def forward(self, x: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
+        """Forward pass returning normalized projections."""
         h = self._encode(x, edge_index)
         z = self.projector(h)
         z = F.normalize(z, p=2, dim=-1)
         return z
+    
+    def get_embedding(self, x: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
+        """Get hidden embeddings before projection."""
+        return self._encode(x, edge_index)
 
     def _nt_xent(self, z1: torch.Tensor, z2: torch.Tensor) -> torch.Tensor:
-        """NT-Xent contrastive loss."""
+        """NT-Xent (Normalized Temperature-scaled Cross Entropy) loss."""
         N = z1.size(0)
         sim_matrix = torch.matmul(z1, z2.t()) / self.tau_align
         labels = torch.arange(N, device=z1.device)

@@ -2,14 +2,15 @@
 
 The foundation and reproducibility are based on the attached paper 2025.findings-acl.314.pdf: implemented end-to-end cycle pretrain → agents → filter R → update X → ranking fine-tuning → metrics over GNN backbones (MAGI, DMoN) with local LLM.
 
-## 📚 Interactive Blog
+## Interactive Blog
 
 We provide an interactive blog that explains Graph ML concepts and the MARK framework step-by-step:
 
-**[View the Blog](https://github.com/Quartz-Admirer/MARK-implementation)** (replace with your GitHub Pages URL)
+**[View the Blog](https://rvz16.github.io/MARK-implementation/)**
 
 ### Running the Blog Locally
 ```bash
+
 # Option 1: Python HTTP server
 cd docs && python -m http.server 8080
 # Then open http://localhost:8080

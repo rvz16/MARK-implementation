@@ -74,7 +74,7 @@
                     <span class="stat-label">Accuracy Gain</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-value">4</span>
+                    <span class="stat-value">1</span>
                     <span class="stat-label">Benchmark Datasets</span>
                 </div>
             </div>
@@ -365,59 +365,84 @@ embedding = plm.encode(text)  # Shape: [384]</code></pre>
             </article>
 
             <article class="article-block">
-                <h3>Graph Convolutional Networks (GCN)</h3>
+                <h3>GNN Encoder in MARK (MAGI)</h3>
                 <p>
-                    The <strong>Graph Convolutional Network</strong> (Kipf & Welling, 2017) is the foundational 
-                    architecture. It uses a simple but effective aggregation with normalized adjacency matrix.
+                    In MARK is used <strong>MAGIEncoder</strong> — multi-layer GCN with BatchNorm, 
+                    projection head and learnable centers clusters. It is a backbone for contrastive 
+                    learning and graph clusterisation.
                 </p>
 
                 <div class="code-block">
                     <div class="code-header">
                         <span class="code-lang">Python</span>
-                        <span class="code-file">gcn_layer.py</span>
+                        <span class="code-file">mark/backbones/magi.py</span>
                     </div>
                     <pre><code class="language-python">import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
 
-class GCNEncoder(nn.Module):
+class MAGIEncoder(nn.Module):
     """
-    A simple 2-layer GCN encoder for node embeddings.
-    This is the backbone used in MARK for graph encoding.
+    MAGI: Multi-view Alignment Graph Clustering.
+    Uses multi-layer GCN with BatchNorm and projection head.
     """
-    def __init__(self, in_dim: int, hidden_dim: int, out_dim: int):
+    def __init__(self, in_dim: int, hidden_dim: int, proj_dim: int, 
+                 num_clusters: int, num_layers: int = 2, dropout: float = 0.0):
         super().__init__()
-        # First GCN layer: input → hidden
-        self.conv1 = GCNConv(in_dim, hidden_dim)
-        self.bn1 = nn.BatchNorm1d(hidden_dim)
+        self.dropout = dropout
         
-        # Second GCN layer: hidden → output
-        self.conv2 = GCNConv(hidden_dim, out_dim)
-        self.bn2 = nn.BatchNorm1d(out_dim)
-    
-    def forward(self, x, edge_index):
-        # Layer 1: Aggregate + Transform + Normalize + Activate
-        h = self.conv1(x, edge_index)
-        h = self.bn1(h)
-        h = F.relu(h)
-        h = F.dropout(h, p=0.1, training=self.training)
+        # Multi-layer GCN encoder
+        self.convs = nn.ModuleList()
+        self.bns = nn.ModuleList()
         
-        # Layer 2: Same pattern
-        h = self.conv2(h, edge_index)
-        h = self.bn2(h)
-        h = F.relu(h)
+        # First layer: input_dim → hidden_dim
+        self.convs.append(GCNConv(in_dim, hidden_dim))
+        self.bns.append(nn.BatchNorm1d(hidden_dim))
         
+        # Additional layers: hidden_dim → hidden_dim
+        for _ in range(num_layers - 1):
+            self.convs.append(GCNConv(hidden_dim, hidden_dim))
+            self.bns.append(nn.BatchNorm1d(hidden_dim))
+        
+        # Projection head (2-layer MLP)
+        self.projector = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.BatchNorm1d(hidden_dim),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim, proj_dim),
+        )
+        
+        # Learnable cluster centers
+        self._centers = nn.Parameter(torch.randn(num_clusters, proj_dim))
+
+    def _encode(self, x: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
+        """GCN encoding with batch norm and activation."""
+        h = x
+        for conv, bn in zip(self.convs, self.bns):
+            h = conv(h, edge_index)
+            h = bn(h)
+            h = F.relu(h)
+            if self.dropout > 0 and self.training:
+                h = F.dropout(h, p=self.dropout, training=True)
         return h
 
+    def forward(self, x: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
+        """Forward pass returning normalized projections."""
+        h = self._encode(x, edge_index)
+        z = self.projector(h)
+        z = F.normalize(z, p=2, dim=-1)
+        return z
+
 # Usage example
-encoder = GCNEncoder(in_dim=1433, hidden_dim=256, out_dim=128)
-embeddings = encoder(data.x, data.edge_index)
-print(f"Node embeddings shape: {embeddings.shape}")  # [2708, 128]</code></pre>
+model = MAGIEncoder(in_dim=1433, hidden_dim=256, proj_dim=128, num_clusters=7)
+z = model(data.x, data.edge_index)
+print(f"Node embeddings shape: {z.shape}")  # [2708, 128]</code></pre>
                 </div>
 
                 <div class="architecture-diagram">
-                    <h4>GCN Layer Operation</h4>
+                    <h4>MAGI Encoder Architecture</h4>
                     <div class="arch-flow">
                         <div class="arch-block input">
                             <span class="block-label">X ∈ ℝ<sup>N×F</sup></span>
@@ -425,23 +450,23 @@ print(f"Node embeddings shape: {embeddings.shape}")  # [2708, 128]</code></pre>
                         </div>
                         <div class="arch-arrow">→</div>
                         <div class="arch-block conv">
-                            <span class="block-label">D̃<sup>-½</sup>ÃD̃<sup>-½</sup>XW</span>
-                            <span class="block-desc">Graph Convolution</span>
+                            <span class="block-label">GCNConv×L</span>
+                            <span class="block-desc">Multi-layer GCN</span>
                         </div>
                         <div class="arch-arrow">→</div>
                         <div class="arch-block norm">
-                            <span class="block-label">BatchNorm</span>
-                            <span class="block-desc">Normalization</span>
+                            <span class="block-label">BN + ReLU</span>
+                            <span class="block-desc">Norm + Activation</span>
                         </div>
                         <div class="arch-arrow">→</div>
                         <div class="arch-block act">
-                            <span class="block-label">ReLU</span>
-                            <span class="block-desc">Activation</span>
+                            <span class="block-label">MLP Projector</span>
+                            <span class="block-desc">2-layer head</span>
                         </div>
                         <div class="arch-arrow">→</div>
                         <div class="arch-block output">
-                            <span class="block-label">H ∈ ℝ<sup>N×H</sup></span>
-                            <span class="block-desc">Hidden States</span>
+                            <span class="block-label">Z = L2_norm(z)</span>
+                            <span class="block-desc">Embeddings</span>
                         </div>
                     </div>
                 </div>
@@ -1221,7 +1246,7 @@ for step in range(1, T + 1):
                                 <th>Pre-Train (Ours)</th>
                                 <th>MARK-MAGI (Paper)</th>
                                 <th>MARK-MAGI (Ours)</th>
-                                <th>Improvement</th>
+                                <th>Difference</th>
                             </tr>
                         </thead>
                         <tbody>
